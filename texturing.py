@@ -6,14 +6,14 @@ import os
 
 BLACK = (0, 0, 0)
 
-class Spritesheet:
+class SpriteSheet:
 
     def __init__(self,
                  filename: str,
                  tile_size: int,
                  amp_factor: int,
                  dimension: tuple[int,int]) -> None:
-        '''Creates an object that handles a given spritesheet. Contains methods to locate and
+        '''Creates an object that handles a given sprite sheet. Contains methods to locate and
         load all its textures and add them to a pygame surfaces list.'''
 
         self.filename = filename
@@ -78,7 +78,7 @@ class Level:
         filename_map.csv containing the level tiles layout.'''
 
         '''LOAD SPRITESHEET, CORRECT TEXTURES SIZE, AND ADD TEXTURES TO A LIST'''
-        self.spritesheet = Spritesheet(filename=filename_sp,
+        self.spritesheet = SpriteSheet(filename=filename_sp,
                                        tile_size=tile_size,
                                        amp_factor=amp_factor,
                                        dimension=spritesheet_size)
@@ -98,10 +98,10 @@ class Level:
         self.level_surface.set_colorkey(BLACK)
         self.render_tiles_to_surface()
 
-    def render(self, window) -> None:
-        '''Renders level surface to the game window.'''
+    def render(self, screen) -> None:
+        '''Renders level surface to the game screen.'''
 
-        window.blit(self.level_surface, (0, 0))
+        screen.blit(self.level_surface, (0, 0))
 
     def render_tiles_to_surface(self) -> None:
         '''Renders each mapped tile to the level surface.'''

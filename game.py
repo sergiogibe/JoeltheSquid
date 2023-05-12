@@ -24,7 +24,7 @@ class Game:
         self.resolution: tuple = (self.width, self.height)
 
         '''CREATE WINDOW'''
-        self.window = pygame.display.set_mode(self.resolution)
+        self.screen = pygame.display.set_mode(self.resolution)
         pygame.display.set_caption(self.name)
 
         '''SET GAME FPS AND DT (TIME INTERVAL TO PHYSICS CALCULATION)'''
@@ -38,7 +38,7 @@ class Game:
         '''Load the map and the player. Must be called before the main loop.'''
 
         '''LOAD ENTITIES'''
-        self.player = Joel(self.resolution)
+        self.player = Joel(self.amp_factor)
 
         '''LOAD MAP'''
         self.level = Level(filename_sp=spritesheet,
@@ -69,6 +69,8 @@ class Game:
                     self.player.jump()
                 elif event.key == pygame.K_z:
                     self.player.is_running = True
+                elif event.key == pygame.K_r:
+                    self.player.reset()
 
             if event.type == pygame.KEYUP:
                 if event.key == pygame.K_LEFT:
@@ -82,27 +84,23 @@ class Game:
                 elif event.key == pygame.K_z:
                     self.player.is_running = False
 
-    def update(self, show=False) -> None:
+    def update(self) -> None:
         '''Call update methods for every entitie created.'''
 
-        self.player.update(self.dt)
-
-        '''SHOW RUNNING (UPDATE) MESSAGE'''
-        if show:
-            print("Running (UPDATING) ... ")
+        self.player.update(self.dt, self.level)
 
     def render(self) -> None:
         '''Control and call the rendering of every instance:
         player, enemies, and map.'''
 
         '''START FILLING THE SCREEN WITH BLACK BACKGROUND'''
-        self.window.fill(BLACK)
+        self.screen.fill(BLACK)
 
         '''RENDER MAP'''
-        self.level.render(self.window)
+        self.level.render(self.screen)
 
         '''RENDER ENTITIES'''
-        self.player.render(self.window)
+        self.player.render(self.screen, self.level)
 
         '''UPDATE FULL DISPLAY SURFACE TO THE SCREEN'''
         pygame.display.flip()
