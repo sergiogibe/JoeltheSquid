@@ -1,12 +1,11 @@
 
 
 import pygame
-import os
 from pygame.locals import *
 from player import Joel
-from texturing import *
+from level import Level
 
-BLACK = (0,0,0)
+BLACK = (0, 0, 0)
 
 
 class Game:
@@ -32,7 +31,8 @@ class Game:
         self.clock = pygame.time.Clock()
         self.dt = self.clock.tick(self.fps) * 0.001 * self.fps
 
-        self.userInput = 0
+
+    '''============== SETTINGS METHODS ================='''
 
     def load_map(self, spritesheet: str, level: str, spritesheet_size: tuple[int,int]) -> None:
         '''Load the map and the player. Must be called before the main loop.'''
@@ -47,6 +47,11 @@ class Game:
                            amp_factor=self.amp_factor,
                            spritesheet_size=spritesheet_size)
 
+        self.level.add_entity(entity=self.player)
+
+
+    '''============== GAME LOOP METHODS ================'''
+
     def handle_events(self) -> None:
         '''Main function that handle game events such as quit button,
         user input, and etc.'''
@@ -58,36 +63,18 @@ class Game:
             if event.type == QUIT:
                 pygame.quit()
                 exit()
-
-            '''USER INPUT EVENTS'''
             if event.type == KEYDOWN:
-                if event.key == pygame.K_LEFT:
-                    self.player.left_key = True
-                elif event.key == pygame.K_RIGHT:
-                    self.player.right_key = True
-                elif event.key == pygame.K_SPACE:
-                    self.player.jump()
-                elif event.key == pygame.K_z:
-                    self.player.is_running = True
-                elif event.key == pygame.K_r:
-                    self.player.reset()
+                if event.key == pygame.K_ESCAPE:
+                    pygame.quit()
+                    exit()
 
-            if event.type == pygame.KEYUP:
-                if event.key == pygame.K_LEFT:
-                    self.player.left_key = False
-                elif event.key == pygame.K_RIGHT:
-                    self.player.right_key = False
-                elif event.key == pygame.K_SPACE:
-                    if self.player.jumping:
-                        self.player.velocity.y *= self.player.jump_control
-                        self.player.jumping = False
-                elif event.key == pygame.K_z:
-                    self.player.is_running = False
+            '''PLAYER CONTROL'''
+            self.player.control(event)
 
     def update(self) -> None:
-        '''Call update methods for every entitie created.'''
+        '''Calls update methods for every entity created and also level updates.'''
 
-        self.player.update(self.dt, self.level)
+        self.player.update(self.dt, self.level.tiles)
 
     def render(self) -> None:
         '''Control and call the rendering of every instance:
