@@ -11,8 +11,9 @@ def main() -> None:
     game = Game()
 
     '''INITIALIZE LEVEL'''
-    game.load_map(spritesheet="dungeon_tiles.png",
-                  level="level1test.csv",
+    game.load_map(spritesheet="./assets/dungeon_tiles.png",
+                  background="./assets/cave-bg.png",
+                  level="./assets/level1test.csv",
                   spritesheet_size=(5,5))
 
     while True:

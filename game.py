@@ -4,6 +4,7 @@ import pygame
 from pygame.locals import *
 from player import Joel
 from level import Level
+from camera import Camera
 
 BLACK = (0, 0, 0)
 
@@ -34,7 +35,7 @@ class Game:
 
     '''============== SETTINGS METHODS ================='''
 
-    def load_map(self, spritesheet: str, level: str, spritesheet_size: tuple[int,int]) -> None:
+    def load_map(self, spritesheet: str, background: str, level: str, spritesheet_size: tuple[int,int]) -> None:
         '''Load the map and the player. Must be called before the main loop.'''
 
         '''LOAD ENTITIES'''
@@ -43,11 +44,15 @@ class Game:
         '''LOAD MAP'''
         self.level = Level(filename_sp=spritesheet,
                            filename_map=level,
+                           filename_bg=background,
                            tile_size=self.tile_size,
                            amp_factor=self.amp_factor,
                            spritesheet_size=spritesheet_size)
 
         self.level.add_entity(entity=self.player)
+
+        '''INITIALIZE CAMERA (FOLLOW METHOD)'''
+        self.camera = Camera(self.resolution)
 
 
     '''============== GAME LOOP METHODS ================'''
@@ -75,6 +80,7 @@ class Game:
         '''Calls update methods for every entity created and also level updates.'''
 
         self.player.update(self.dt, self.level.tiles)
+        self.camera.scroll(target=self.player)
 
     def render(self) -> None:
         '''Control and call the rendering of every instance:
@@ -84,10 +90,10 @@ class Game:
         self.screen.fill(BLACK)
 
         '''RENDER MAP'''
-        self.level.render(self.screen)
+        self.level.render(self.screen, self.camera)
 
         '''RENDER ENTITIES'''
-        self.player.render(self.screen, self.level)
+        self.player.render(self.screen, self.camera)
 
         '''UPDATE FULL DISPLAY SURFACE TO THE SCREEN'''
         pygame.display.flip()

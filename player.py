@@ -14,7 +14,7 @@ class Joel:
         self.height = 16*amp_factor
 
         '''LOAD TEXTURES'''
-        self.sprites = SpriteSheet(filename='joel.png',tile_size=16,amp_factor=amp_factor,dimension=(1,10))
+        self.sprites = SpriteSheet(filename='assets/joel.png', tile_size=16, amp_factor=amp_factor, dimension=(1, 10))
         self.n_sprites = len(self.sprites.textures)
         self.curent_sprite = 0
         self.joel_image = self.sprites.textures[self.curent_sprite]
@@ -59,16 +59,20 @@ class Joel:
 
     '''=============  PUBLIC METHODS ==============='''
 
-    def render(self, screen, show_hitbox=True) -> None:
+    def render(self, screen, camera, show_hitbox=True) -> None:
         '''Renders player on the screen given.'''
 
         self._animate()
-        screen.blit(self.joel_image, self.joel_hitbox)
+        screen.blit(self.joel_image, (self.joel_hitbox.x - camera.offset.x, self.joel_hitbox.y))
 
         if show_hitbox and self.is_colliding:
-            pygame.draw.rect(surface=screen,
-                             color=self.hitbox_color,
-                             rect=self.joel_hitbox,
+            rect = pygame.Rect(self.joel_hitbox.x - camera.offset.x,
+                               self.joel_hitbox.y,
+                               self.joel_hitbox.w,
+                               self.joel_hitbox.h)
+            pygame.draw.rect(screen,
+                             self.hitbox_color,
+                             rect,
                              border_radius=1,
                              width=1)
 
@@ -145,6 +149,8 @@ class Joel:
                 self.curent_sprite = 0  #avoid getting too big, although modulo handles list index
             self.curent_sprite += 1
             self.curent_sprite = self.curent_sprite % self.n_sprites
+        if self.left_key is False and self.right_key is False:
+            self.curent_sprite = 0
 
         '''JUMPING ANIMATION'''
         if self.jumping:

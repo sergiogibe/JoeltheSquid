@@ -31,6 +31,7 @@ class Level:
     def __init__(self,
                  filename_sp: str,
                  filename_map: str,
+                 filename_bg: str,
                  tile_size: int,
                  amp_factor:int,
                  spritesheet_size: tuple[int, int],
@@ -58,15 +59,16 @@ class Level:
         self.level_blueprint = Level._read_csv(filename_map)
         self._construct_level()
 
-        '''CREATE LEVEL SURFACE TO RENDER TILES ON TOP OF IT'''
+        '''CREATE LEVEL SURFACE TO RENDER TILES ON TOP OF THE BACKGROUND'''
         self.level_surface = pygame.Surface(size=(self.level_width, self.level_height))
         self.level_surface.set_colorkey(BLACK)
+        self.bg = pygame.image.load(filename_bg).convert()
         self._render_tiles_to_surface()
 
-    def render(self, screen) -> None:
+    def render(self, screen, camera) -> None:
         '''Renders level surface to the game screen.'''
 
-        screen.blit(self.level_surface, (0, 0))
+        screen.blit(self.level_surface, (0 - camera.offset.x, 0))
 
     def add_entity(self, entity) -> None:
         '''Applies physical properties to every entity added.
@@ -82,8 +84,12 @@ class Level:
         entity.acceleration = pygame.math.Vector2(0, self.gravity)
 
     def _render_tiles_to_surface(self) -> None:
-        '''Renders each mapped tile to the level surface.'''
+        '''Renders each mapped tile to the level background.'''
 
+        '''RENDER BG TO THE SURFACE'''
+        self.level_surface.blit(self.bg, (0, 0))
+
+        '''RENDER TILES ON TOP OF IT'''
         for tile in self.tiles:
             tile.render(self.level_surface)
 
