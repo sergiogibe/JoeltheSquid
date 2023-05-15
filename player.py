@@ -6,15 +6,15 @@ from texture import SpriteSheet
 
 class Joel:
 
-    def __init__(self, amp_factor, init_x = 64, init_y = 250) -> None:
+    def __init__(self, scale, init_x = 64, init_y = 250) -> None:
         '''Creates player Joel.'''
 
         '''PLAYER DIMENSIONS'''
-        self.width = 16*amp_factor
-        self.height = 16*amp_factor
+        self.width = 16 * scale
+        self.height = 16 * scale
 
         '''LOAD TEXTURES'''
-        self.sprites = SpriteSheet(filename='assets/joel.png', tile_size=16, amp_factor=amp_factor, dimension=(1, 10))
+        self.sprites = SpriteSheet(filename='assets/joel.png', tile_size=16, scale=scale, dimension=(1, 10))
         self.n_sprites = len(self.sprites.textures)
         self.curent_sprite = 0
         self.joel_image = self.sprites.textures[self.curent_sprite]
@@ -39,7 +39,7 @@ class Joel:
         self.facing_left = False
 
         '''PLAYER STATS'''
-        self.jump_force = 10
+        self.jump_force = 11
         self.jumpX_velocity = 1
         self.jump_control = 0.25
         self.walk_accel = 0.3
@@ -94,12 +94,16 @@ class Joel:
 
             '''Y-AXIS FORCE MOTION'''
             self.velocity.y -= self.jump_force/self.weight
+            if self.is_running and abs(self.velocity.x) > 0.75 * self.max_x_velocity:
+                self.velocity.y *= abs(self.velocity.x * 0.14)
 
             '''X-AXIS FORCE MOTION'''
             if self.velocity.x > 0:
                 self.velocity.x += (1/self.weight)*self.jumpX_velocity
-            if self.velocity.x < 0:
+            elif self.velocity.x < 0:
                 self.velocity.x -= (1/self.weight)*self.jumpX_velocity
+            elif self.velocity.x < 1 and self.velocity.x > 1:
+                self.velocity += 0
 
             '''NOT JUMP AGAIN UNTIL COMPLETE THE FALLING'''
             self.on_ground = False
@@ -176,6 +180,7 @@ class Joel:
             elif self.velocity.x < 0:  # Hit tile moving left
                 self.position.x = tile.rect.right
                 self.joel_hitbox.x = self.position.x
+            self.velocity.x = 0
 
     def _handle_collisions_y(self, tiles):
         self.on_ground = False

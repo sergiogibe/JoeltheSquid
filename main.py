@@ -2,19 +2,21 @@
 
 
 from game import Game
+import json
 
 
 def main() -> None:
     '''This is the main function.'''
 
+    '''OPEN CONFIGURATION'''
+    with open("settings.json") as json_file:
+        game_config = json.load(json_file)
+
     '''INITIALIZE GAME INSTANCE'''
-    game = Game()
+    game = Game(config=game_config)
 
     '''INITIALIZE LEVEL'''
-    game.load_map(spritesheet="./assets/dungeon_tiles.png",
-                  background="./assets/cave-bg.png",
-                  level="./assets/level1test.csv",
-                  spritesheet_size=(5,5))
+    game.load_map(level=game_config['level2'])
 
     while True:
         game.clock.tick(game.fps)

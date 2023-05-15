@@ -8,14 +8,14 @@ class SpriteSheet:
     def __init__(self,
                  filename: str,
                  tile_size: int,
-                 amp_factor: int,
+                 scale: int,
                  dimension: tuple[int, int]) -> None:
         '''Creates an object that handles a given sprite sheet. Contains methods to locate and
         load all its textures and add them to a pygame surfaces list.'''
 
         self._filename = filename
         self._tile_size = tile_size
-        self._amp_factor = amp_factor
+        self._scale = scale
         self._dimension = dimension
         self._sprite_sheet = pygame.image.load(filename).convert()
         self.textures = []
@@ -42,4 +42,4 @@ class SpriteSheet:
                                                                               y * self._tile_size,
                                                                               self._tile_size,
                                                                               self._tile_size),
-                                                            (16 * self._amp_factor, 16 * self._amp_factor)))
+                                                            (16 * self._scale, 16 * self._scale)))

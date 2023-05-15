@@ -5,8 +5,6 @@ import csv
 import os
 from texture import SpriteSheet
 
-BLACK = (0, 0, 0)
-
 
 class Tile:
 
@@ -15,55 +13,50 @@ class Tile:
         that renders it in a given surface.
         x_pos and y_pos are the positions of the left upper vertice in relation to the level.'''
 
-        self.texture = texture
-        self.rect = self.texture.get_rect()
+        self._texture = texture
+        self.rect = self._texture.get_rect()
         self.rect.x = x_pos
         self.rect.y = y_pos
 
     def render(self, surface: pygame.Surface) -> None:
         '''Renders the tile in a given surface.'''
 
-        surface.blit(self.texture, (self.rect.x, self.rect.y))
+        surface.blit(self._texture, (self.rect.x, self.rect.y))
 
 
 class Level:
 
     def __init__(self,
-                 filename_sp: str,
-                 filename_map: str,
-                 filename_bg: str,
+                 level: dict,
                  tile_size: int,
-                 amp_factor:int,
-                 spritesheet_size: tuple[int, int],
-                 gravity: float = 0.85,
-                 friction: float = -0.10) -> None:
+                 scale: int) -> None:
         '''Creates and map the tiles to the specified level given the spritesheet and the
         filename_map.csv containing the level tiles layout.'''
 
-        self.gravity = gravity
-        self.friction = friction
+        self.gravity = level['physics']['gravity']
+        self.friction = level['physics']['friction']
 
         '''LOAD SPRITESHEET, CORRECT TEXTURES SIZE, AND ADD TEXTURES TO A LIST'''
-        self.spritesheet = SpriteSheet(filename=filename_sp,
+        self.spritesheet = SpriteSheet(filename=level['sp'],
                                        tile_size=tile_size,
-                                       amp_factor=amp_factor,
-                                       dimension=spritesheet_size)
+                                       scale=scale,
+                                       dimension=(level['sp_w'],level['sp_h']) )
 
         '''KEEP TRACK OF THE TILE SIZE AFTER AMPLIFICATION'''
-        self.tile_size = tile_size * amp_factor
-        self.amp_factor = amp_factor
+        self.tile_size = tile_size * scale
+        self.scale = scale
 
         '''CONSTRUCT LEVEL BY MAPPING ALL TILES'''
         self.tiles = []
         self.level_width, self.level_height = None, None
-        self.level_blueprint = Level._read_csv(filename_map)
+        self.level_blueprint = Level._read_csv(level['mapping'])
         self._construct_level()
 
         '''CREATE LEVEL SURFACE TO RENDER TILES ON TOP OF THE BACKGROUND'''
         self.level_surface = pygame.Surface(size=(self.level_width, self.level_height))
-        self.level_surface.set_colorkey(BLACK)
-        self.bg = pygame.image.load(filename_bg).convert()
-        self._render_tiles_to_surface()
+        self.level_surface.set_colorkey((0,0,0))
+        self.bg = pygame.image.load(level['bg']).convert()
+        self._render_tiles_to_surface(render_bg=False)
 
     def render(self, screen, camera) -> None:
         '''Renders level surface to the game screen.'''
@@ -83,11 +76,12 @@ class Level:
         entity.weight = entity.mass * self.gravity
         entity.acceleration = pygame.math.Vector2(0, self.gravity)
 
-    def _render_tiles_to_surface(self) -> None:
+    def _render_tiles_to_surface(self, render_bg=True) -> None:
         '''Renders each mapped tile to the level background.'''
 
         '''RENDER BG TO THE SURFACE'''
-        self.level_surface.blit(self.bg, (0, 0))
+        if render_bg:
+            self.level_surface.blit(self.bg, (0, 0))
 
         '''RENDER TILES ON TOP OF IT'''
         for tile in self.tiles:
