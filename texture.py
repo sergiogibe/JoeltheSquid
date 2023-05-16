@@ -7,7 +7,7 @@ class SpriteSheet:
 
     def __init__(self,
                  filename: str,
-                 tile_size: int,
+                 tile_size: tuple[int, int],
                  scale: int,
                  dimension: tuple[int, int]) -> None:
         '''Creates an object that handles a given sprite sheet. Contains methods to locate and
@@ -38,8 +38,9 @@ class SpriteSheet:
 
         for y in range(0, self._dimension[0]):
             for x in range(0, self._dimension[1]):
-                self.textures.append(pygame.transform.scale(self._get_texture(x * self._tile_size,
-                                                                              y * self._tile_size,
-                                                                              self._tile_size,
-                                                                              self._tile_size),
-                                                            (16 * self._scale, 16 * self._scale)))
+                self.textures.append(pygame.transform.scale(self._get_texture(x * self._tile_size[0],
+                                                                              y * self._tile_size[1],
+                                                                              self._tile_size[0],
+                                                                              self._tile_size[1]),
+                                                            (self._tile_size[0] * self._scale,
+                                                             self._tile_size[1] * self._scale)))

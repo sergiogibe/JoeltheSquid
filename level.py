@@ -29,34 +29,46 @@ class Level:
     def __init__(self,
                  level: dict,
                  tile_size: int,
-                 scale: int) -> None:
+                 scale: int,
+                 print_load_message: bool = False) -> None:
         '''Creates and map the tiles to the specified level given the spritesheet and the
-        filename_map.csv containing the level tiles layout.'''
+        filename_map.csv containing the level tiles layout. This class handle multiple layers,
+        however keep in my that it should render the foreground(where the code check
+        collisions) lastly. You can do this by simply setting the foreground lastly in the
+        settings.json.'''
 
         self.gravity = level['physics']['gravity']
         self.friction = level['physics']['friction']
-
-        '''LOAD SPRITESHEET, CORRECT TEXTURES SIZE, AND ADD TEXTURES TO A LIST'''
-        self.spritesheet = SpriteSheet(filename=level['sp'],
-                                       tile_size=tile_size,
-                                       scale=scale,
-                                       dimension=(level['sp_w'],level['sp_h']) )
 
         '''KEEP TRACK OF THE TILE SIZE AFTER AMPLIFICATION'''
         self.tile_size = tile_size * scale
         self.scale = scale
 
-        '''CONSTRUCT LEVEL BY MAPPING ALL TILES'''
-        self.tiles = []
-        self.level_width, self.level_height = None, None
-        self.level_blueprint = Level._read_csv(level['mapping'])
-        self._construct_level()
+        '''LOOP THROUGH LAYERS'''
+        self.tiles_per_layer = []
+        for layer in level['layers']:
+
+            '''LOAD SPRITESHEET, SCALE SIZE, AND ADD TEXTURES TO A LIST'''
+            spritesheet = SpriteSheet(filename=layer['sp'],
+                                      tile_size=(tile_size,tile_size),
+                                      scale=scale,
+                                      dimension=(layer['sp_w'],layer['sp_h']) )
+
+            '''CONSTRUCT LEVEL BY MAPPING ALL TILES'''
+            level_blueprint = Level._read_csv(layer['mapping'])
+            tiles = self._construct_level(spritesheet, level_blueprint)
+            self.tiles_per_layer.append(tiles)
 
         '''CREATE LEVEL SURFACE TO RENDER TILES ON TOP OF THE BACKGROUND'''
-        self.level_surface = pygame.Surface(size=(self.level_width, self.level_height))
+        self.level_surface = pygame.Surface(size=(level['size_in_tiles'][0]*self.tile_size*self.scale,
+                                                  level['size_in_tiles'][1]*self.tile_size*self.scale))
         self.level_surface.set_colorkey((0,0,0))
         self.bg = pygame.image.load(level['bg']).convert()
         self._render_tiles_to_surface(render_bg=False)
+
+        '''LOADED MESSAGE'''
+        if print_load_message:
+            print(f'{level["name"]} successfully loaded')
 
     def render(self, screen, camera) -> None:
         '''Renders level surface to the game screen.'''
@@ -84,28 +96,30 @@ class Level:
             self.level_surface.blit(self.bg, (0, 0))
 
         '''RENDER TILES ON TOP OF IT'''
-        for tile in self.tiles:
-            tile.render(self.level_surface)
+        for tile_layer in self.tiles_per_layer:
+            for tile in tile_layer:
+                tile.render(self.level_surface)
 
-    def _construct_level(self) -> None:
+    def _construct_level(self,
+                         spritesheet: object,
+                         level_blueprint: list) -> list:
         '''Constructs level by creating and mapping all tiles.'''
 
         '''TILES SWEEP LEVEL CONSTRUCTION'''
-        n_rows = len(self.level_blueprint)
-        n_cols = len(self.level_blueprint[0])
+        n_rows = len(level_blueprint)
+        n_cols = len(level_blueprint[0])
         x, y = 0, 0
+        tiles = []
         for i in range(n_rows):
             x = 0
             for j in range(n_cols):
-                if self.level_blueprint[i][j] != '-1':
-                    self.tiles.append(Tile(x * self.tile_size,
-                                           y * self.tile_size,
-                                           self.spritesheet.textures[int(self.level_blueprint[i][j])]))
+                if level_blueprint[i][j] != '-1':
+                    tiles.append(Tile(x * self.tile_size, y * self.tile_size,
+                                        spritesheet.textures[int(level_blueprint[i][j])]))
                 x += 1
             y += 1
 
-        '''FIND LEVEL DIMENSIONS'''
-        self.level_width, self.level_height = x*self.tile_size, y*self.tile_size
+        return tiles
 
     @staticmethod
     def _read_csv(filename_map: str) -> list:

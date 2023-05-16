@@ -14,10 +14,20 @@ class Joel:
         self.height = 16 * scale
 
         '''LOAD TEXTURES'''
-        self.sprites = SpriteSheet(filename='assets/joel.png', tile_size=16, scale=scale, dimension=(1, 10))
-        self.n_sprites = len(self.sprites.textures)
-        self.curent_sprite = 0
-        self.joel_image = self.sprites.textures[self.curent_sprite]
+        self.walk_sprites = SpriteSheet(filename='assets/joel.png',
+                                        tile_size=(16,16),
+                                        scale=scale,
+                                        dimension=(1, 10))
+        self.n_walk_sprites = len(self.walk_sprites.textures)
+        self.curent_walk_sprite = 0
+        self.atk_sprites = SpriteSheet(filename='./assets/joel-atk.png',
+                                       tile_size=(48,16),
+                                       scale=scale,
+                                       dimension=(1,5))
+        self.n_atk_sprites = len(self.atk_sprites.textures)
+        self.current_atk_sprite = 0
+
+        self.joel_image = self.walk_sprites.textures[self.curent_walk_sprite]
         self.joel_hitbox = self.joel_image.get_rect()
         self.hitbox_color = (255,0,0)
 
@@ -36,7 +46,10 @@ class Joel:
         self.on_ground = False
         self.is_running = False
         self.is_colliding = False
+        self.is_sticked = False
         self.facing_left = False
+        self.is_attacking = False
+        self.ready_to_atk = True
 
         '''PLAYER STATS'''
         self.jump_force = 11
@@ -63,7 +76,10 @@ class Joel:
         '''Renders player on the screen given.'''
 
         self._animate()
-        screen.blit(self.joel_image, (self.joel_hitbox.x - camera.offset.x, self.joel_hitbox.y))
+        if self.is_attacking and self.facing_left:
+            screen.blit(self.joel_image, (self.joel_hitbox.x - camera.offset.x - 128, self.joel_hitbox.y))
+        else:
+            screen.blit(self.joel_image, (self.joel_hitbox.x - camera.offset.x, self.joel_hitbox.y))
 
         if show_hitbox and self.is_colliding:
             rect = pygame.Rect(self.joel_hitbox.x - camera.offset.x,
@@ -111,8 +127,13 @@ class Joel:
     def reset(self) -> None:
         self.position.x, self.position.y = self.init_x, self.init_y
         self.facing_left = False
-        self.curent_sprite = 0
+        self.curent_walk_sprite = 0
         self.velocity.x, self.velocity.y = 0, 0
+
+    def attack(self):
+        if self.ready_to_atk:
+            self.is_attacking = True
+            self.ready_to_atk = False
 
     def control(self, event) -> None:
 
@@ -128,6 +149,8 @@ class Joel:
                 self.is_running = True
             elif event.key == pygame.K_r:
                 self.reset()
+            elif event.key == pygame.K_f:
+                self.attack()
 
         if event.type == pygame.KEYUP:
             if event.key == pygame.K_LEFT:
@@ -140,6 +163,10 @@ class Joel:
                     self.jumping = False
             elif event.key == pygame.K_z:
                 self.is_running = False
+            elif event.key == pygame.K_f:
+                if self.is_attacking:
+                    self.is_attacking = False
+                    self.ready_to_atk = True
 
 
     '''=============  PRIVATE METHODS ==============='''
@@ -149,16 +176,19 @@ class Joel:
 
         '''LEFT AND RIGHT ANIMATION'''
         if self.left_key or self.right_key:
-            if self.curent_sprite > 9:
-                self.curent_sprite = 0  #avoid getting too big, although modulo handles list index
-            self.curent_sprite += 1
-            self.curent_sprite = self.curent_sprite % self.n_sprites
+            if self.curent_walk_sprite > 9:
+                self.curent_walk_sprite = 0  #avoid getting too big, although modulo handles list index
+            if self.is_running:
+                self.curent_walk_sprite += 1
+            else:
+                self.curent_walk_sprite += 0.5
+            self.curent_walk_sprite = self.curent_walk_sprite % self.n_walk_sprites
         if self.left_key is False and self.right_key is False:
-            self.curent_sprite = 0
+            self.curent_walk_sprite = 0
 
         '''JUMPING ANIMATION'''
         if self.jumping:
-            self.curent_sprite = 5
+            self.curent_walk_sprite = 5
 
         '''FACING LEFT-RIGHT ANIMATION'''
         if self.left_key:
@@ -166,13 +196,33 @@ class Joel:
         elif self.right_key:
             self.facing_left = False
 
+        '''ATTACK ANIMATION'''
+        if self.is_attacking:
+            if self.current_atk_sprite > 3:
+                self.current_atk_sprite = 0
+            self.current_atk_sprite += 0.6
+            self.current_atk_sprite = self.current_atk_sprite % self.n_walk_sprites
+        else:
+            self.current_atk_sprite = 0
+
         '''CREATE IMAGE'''
-        self.joel_image = pygame.transform.flip(self.sprites.textures[self.curent_sprite],
-                                                flip_x=self.facing_left,
-                                                flip_y=False)
+        if self.is_attacking is False:
+            self.joel_image = pygame.transform.flip(self.walk_sprites.textures[int(self.curent_walk_sprite)],
+                                                    flip_x=self.facing_left,
+                                                    flip_y=False)
+        if self.is_attacking is True:
+            self.joel_image = pygame.transform.flip(self.atk_sprites.textures[int(self.current_atk_sprite)],
+                                                    flip_x=self.facing_left,
+                                                    flip_y=False)
 
     def _handle_collisions_x(self, tiles) -> None:
         tiles_collided = self._get_hits(tiles)
+
+        if len(tiles_collided) > 0:
+            self.is_colliding = True
+        else:
+            self.is_colliding = False
+
         for tile in tiles_collided:
             if self.velocity.x > 0:    # Hit tile moving right
                 self.position.x = tile.rect.left - self.joel_hitbox.w

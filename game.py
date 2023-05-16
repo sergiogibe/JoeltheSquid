@@ -44,8 +44,8 @@ class Game:
         '''LOAD MAP'''
         self.level = Level(level=level,
                            tile_size=self.tile_size,
-                           scale=self.scale)
-        print(f'Loaded {level["name"]}')
+                           scale=self.scale,
+                           print_load_message=True)
 
         self.level.add_entity(entity=self.player)
 
@@ -77,7 +77,7 @@ class Game:
     def update(self) -> None:
         '''Calls update methods for every entity created and also level updates.'''
 
-        self.player.update(self.dt, self.level.tiles)
+        self.player.update(self.dt, self.level.tiles_per_layer[-1])
         self.camera.scroll(target=self.player)
 
     def render(self) -> None:

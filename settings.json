@@ -9,12 +9,13 @@
 
   "tiles": {
     "tile-size": 16,
-    "scale": 3
+    "scale": 4
   },
 
   "level1": {
-    "name": "cave1",
-    "mapping": "./assets/level1test.csv",
+    "name": "cave-test",
+    "mapping": "./assets/leveltest.csv",
+    "layers": 1,
     "sp": "./assets/dungeon_tiles.png",
     "sp_w": 5,
     "sp_h": 5,
@@ -23,13 +24,20 @@
   },
 
   "level2": {
-    "name": "cave2",
-    "mapping": "./assets/level2test.csv",
-    "sp": "./assets/dungeon_tiles.png",
-    "sp_w": 5,
-    "sp_h": 5,
+    "name": "cave-origin",
+    "size_in_tiles": [125, 15],
+    "layers": [
+      {"mapping": "./assets/cave-map1_bg.csv",
+        "sp": "./assets/dungeon_tiles_bg.png",
+        "sp_w": 5,
+        "sp_h": 5},
+      {"mapping": "./assets/cave-map1_fg.csv",
+        "sp": "./assets/dungeon_tiles_fg.png",
+        "sp_w": 5,
+        "sp_h": 5}
+    ],
     "bg": "./assets/cave-bg.png",
-    "physics": {"gravity": 0.90, "friction": -0.10}
+    "physics": {"gravity": 0.86, "friction": -0.10}
   }
 
 }
