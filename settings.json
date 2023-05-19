@@ -9,7 +9,16 @@
 
   "tiles": {
     "tile-size": 16,
-    "scale": 4
+    "scale": 3
+  },
+
+  "joel": {
+    "walk_sheet": "./assets/joel.png",
+    "atk_sheet": "./assets/joel-atk-sheet.png"
+  },
+
+  "kittol": {
+    "walk_sheet": "./assets/kittol-sheet.png"
   },
 
   "level1": {
@@ -28,7 +37,7 @@
     "size_in_tiles": [125, 15],
     "layers": [
       {"mapping": "./assets/cave-map1_bg.csv",
-        "sp": "./assets/dungeon_tiles_bg.png",
+        "sp": "./assets/dungeon_tiles-bg2.png",
         "sp_w": 5,
         "sp_h": 5},
       {"mapping": "./assets/cave-map1_fg.csv",
@@ -37,7 +46,7 @@
         "sp_h": 5}
     ],
     "bg": "./assets/cave-bg.png",
-    "physics": {"gravity": 0.86, "friction": -0.10}
+    "physics": {"gravity": 0.84, "friction": -0.10}
   }
 
 }

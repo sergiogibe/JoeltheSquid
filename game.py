@@ -2,7 +2,7 @@
 
 import pygame
 from pygame.locals import *
-from player import Joel
+from player import *
 from level import Level
 from camera import Camera
 
@@ -15,15 +15,15 @@ class Game:
         to the screen.'''
 
         '''INIT SETUP'''
-        self.config: dict    = config
-        self.name: str       = config["game"]["name"]
-        self.scale: int      = config["tiles"]["scale"]
-        self.tile_size:  int = config["tiles"]["tile-size"]
-        self.width:      int = self.tile_size * self.scale * config["game"]["ntiles_width"]
-        self.height:     int = self.tile_size * self.scale * config["game"]["ntiles_height"]
+        self.config:     dict = config
+        self.name:       str  = config["game"]["name"]
+        self.scale:      int  = config["tiles"]["scale"]
+        self.tile_size:  int  = config["tiles"]["tile-size"]
+        self.width:      int  = self.tile_size * self.scale * config["game"]["ntiles_width"]
+        self.height:     int  = self.tile_size * self.scale * config["game"]["ntiles_height"]
 
         '''CREATE MAIN SCREEN'''
-        self.display_resolution: tuple = (self.width, self.height)
+        self.display_resolution = (self.width, self.height)
         self.screen = pygame.display.set_mode(self.display_resolution)
         pygame.display.set_caption(self.name)
 
@@ -32,6 +32,12 @@ class Game:
         self.clock = pygame.time.Clock()
         self.dt = self.clock.tick(self.fps) * 0.001 * self.fps
 
+        '''CAMERA SETUP'''
+        self.target_player = None
+
+        '''ENTITIES CONTROL'''
+        self.group = []
+
 
     '''============== SETTINGS METHODS ================='''
 
@@ -39,7 +45,13 @@ class Game:
         '''Load the map and the player. Must be called before the main loop.'''
 
         '''LOAD ENTITIES'''
-        self.player = Joel(self.scale)
+        self.player = Joel(self.config,init_x=130,init_y=250)
+        self.kittol = Kittol(self.config,init_x=580,init_y=230)
+
+        '''CREATE GROUP OF ENTITIES'''
+        self.group.append(self.player)
+        self.group.append(self.kittol)
+        self.n_entities = len(self.group)
 
         '''LOAD MAP'''
         self.level = Level(level=level,
@@ -47,9 +59,12 @@ class Game:
                            scale=self.scale,
                            print_load_message=True)
 
-        self.level.add_entity(entity=self.player)
+        '''ADD ENTITIES TO THE LEVEL'''
+        for entity in self.group:
+            self.level.add_entity(entity=entity)
 
         '''INITIALIZE CAMERA (FOLLOW METHOD)'''
+        self.target_player = self.player
         self.camera = Camera(self.display_resolution)
 
 
@@ -77,8 +92,22 @@ class Game:
     def update(self) -> None:
         '''Calls update methods for every entity created and also level updates.'''
 
-        self.player.update(self.dt, self.level.tiles_per_layer[-1])
-        self.camera.scroll(target=self.player)
+        '''UPDATE ENITIES POSITION AND CHECK FOR COLLISIONS'''
+        ix = 0
+        for entity in self.group:
+            aux = []
+            for i in range(self.n_entities):
+                if i != ix:
+                    aux.append(self.group[i].entity_hitbox)
+            entity.update(self.dt, self.level.tiles_per_layer[-1], aux)
+            ix += 1
+
+        '''CAMERA SCROLL'''
+        self.camera.scroll(target=self.target_player)
+
+        '''CHECK PLAYER DEATH POSITION (PLACEHOLDER)'''
+        if self.player.position.y > self.height + 300:
+            self.player.reset()
 
     def render(self) -> None:
         '''Control and call the rendering of every instance:
@@ -91,7 +120,8 @@ class Game:
         self.level.render(self.screen, self.camera)
 
         '''RENDER ENTITIES'''
-        self.player.render(self.screen, self.camera)
+        for entity in self.group:
+            entity.render(self.screen, self.camera)
 
         '''UPDATE FULL DISPLAY SURFACE TO THE SCREEN'''
         pygame.display.flip()

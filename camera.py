@@ -3,6 +3,7 @@ import pygame
 
 class Camera:
     def __init__(self, resolution):
+        self.mode = "follow"
         self.offset = pygame.math.Vector2(0, 0)
         self.offset_float = pygame.math.Vector2(0, 0)
         self.display_width, self.display_height = resolution[0], resolution[1]
