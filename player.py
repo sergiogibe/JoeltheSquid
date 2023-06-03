@@ -11,10 +11,9 @@ class Entity(ABC):
         '''Creates player Joel. '''
 
         '''PLAYER DIMENSIONS'''
-        self.scale = config['tiles']['scale']
-        self.tile_size = config['tiles']['tile-size']
-        self.width = self.tile_size * self.scale
-        self.height = self.tile_size * self.scale
+        self.scale = config['joel']['scale']
+        self.width = config['joel']['tile-size'] * self.scale
+        self.height = config['joel']['tile-size'] * self.scale
 
         '''LOAD TEXTURES'''
         self._load_textures(config)
@@ -74,7 +73,7 @@ class Entity(ABC):
         '''SET RENDER POSITION (CAMERA[only if player] AND ATTACK ADJUSTMENT)'''
         if camera is not None:
             self.render_pos.x = self.entity_hitbox.x - camera.offset.x
-            self.render_pos.y = self.entity_hitbox.y
+            self.render_pos.y = self.entity_hitbox.y - camera.offset.y
         if self.facing_left and (self.trigger_atk_anim or self.trigger_deatk_anim):
             self.render_pos.x -= (self.scale * 32)
 
@@ -90,11 +89,11 @@ class Entity(ABC):
         '''DRAW HITBOX (GOOD FOR DEBUG PURPOSES)'''
         if show_hitbox:
             rect = pygame.Rect(self.entity_hitbox.x - camera.offset.x,
-                               self.entity_hitbox.y,
+                               self.entity_hitbox.y - camera.offset.y,
                                self.entity_hitbox.w,
                                self.entity_hitbox.h)
             rect2 = pygame.Rect(self.atk_hitbox.x - camera.offset.x,
-                                self.atk_hitbox.y-1,
+                                self.atk_hitbox.y - camera.offset.y -1,
                                 self.atk_hitbox.w,
                                 self.atk_hitbox.h)
             if self.is_colliding_tiles:

@@ -16,7 +16,7 @@ def main() -> None:
     game = Game(config=game_config)
 
     '''INITIALIZE LEVEL'''
-    game.load_map(level=game_config['level2'])
+    game.load_map(level_name='level3')
 
     while True:
         game.clock.tick(game.fps)

@@ -15,12 +15,12 @@ class Game:
         to the screen.'''
 
         '''INIT SETUP'''
-        self.config:     dict = config
-        self.name:       str  = config["game"]["name"]
-        self.scale:      int  = config["tiles"]["scale"]
-        self.tile_size:  int  = config["tiles"]["tile-size"]
-        self.width:      int  = self.tile_size * self.scale * config["game"]["ntiles_width"]
-        self.height:     int  = self.tile_size * self.scale * config["game"]["ntiles_height"]
+        self.config:       dict = config
+        self.name:         str  = config["game"]["name"]
+        self.scale:        int  = config["display"]["scale"]
+        self.base_size:    int  = config["display"]["base-size"]
+        self.width:        int  = self.base_size * self.scale * config["game"]["ntiles_width"]
+        self.height:       int  = self.base_size * self.scale * config["game"]["ntiles_height"]
 
         '''CREATE MAIN SCREEN'''
         self.display_resolution = (self.width, self.height)
@@ -41,11 +41,11 @@ class Game:
 
     '''============== SETTINGS METHODS ================='''
 
-    def load_map(self, level:dict) -> None:
+    def load_map(self, level_name: str) -> None:
         '''Load the map and the player. Must be called before the main loop.'''
 
         '''LOAD ENTITIES'''
-        self.player = Joel(self.config,init_x=130,init_y=250)
+        self.player = Joel(self.config,init_x=64,init_y=10)
         self.kittol = Kittol(self.config,init_x=580,init_y=230)
 
         '''CREATE GROUP OF ENTITIES'''
@@ -54,9 +54,8 @@ class Game:
         self.n_entities = len(self.group)
 
         '''LOAD MAP'''
-        self.level = Level(level=level,
-                           tile_size=self.tile_size,
-                           scale=self.scale,
+        self.level = Level(config=self.config,
+                           level_name=level_name,
                            print_load_message=True)
 
         '''ADD ENTITIES TO THE LEVEL'''

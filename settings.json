@@ -7,12 +7,14 @@
     "fps": 60
   },
 
-  "tiles": {
-    "tile-size": 16,
+  "display": {
+    "base-size": 32,
     "scale": 3
   },
 
   "joel": {
+    "tile-size": 16,
+    "scale": 3,
     "walk_sheet": "./assets/joel.png",
     "atk_sheet": "./assets/joel-atk-sheet.png"
   },
@@ -23,6 +25,7 @@
 
   "level1": {
     "name": "cave-test",
+    "tile-size": 16,
     "mapping": "./assets/leveltest.csv",
     "layers": 1,
     "sp": "./assets/dungeon_tiles.png",
@@ -34,6 +37,7 @@
 
   "level2": {
     "name": "cave-origin",
+    "tile-size": 16,
     "size_in_tiles": [125, 15],
     "layers": [
       {"mapping": "./assets/cave-map1_bg.csv",
@@ -47,6 +51,20 @@
     ],
     "bg": "./assets/cave-bg.png",
     "physics": {"gravity": 0.84, "friction": -0.10}
+  },
+
+  "level3": {
+    "name": "joel-planet",
+    "tile-size": 32,
+    "size_in_tiles": [50, 15],
+    "layers": [
+      {"mapping": "./assets/joel-planet-map1.csv",
+        "sp": "./assets/tileset-joel-planet.png",
+        "sp_w": 3,
+        "sp_h": 5}
+    ],
+    "bg": "./assets/cave-bg.png",
+    "physics": {"gravity": 0.80, "friction": -0.10}
   }
 
 }

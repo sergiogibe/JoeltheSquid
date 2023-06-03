@@ -27,9 +27,8 @@ class Tile:
 class Level:
 
     def __init__(self,
-                 level: dict,
-                 tile_size: int,
-                 scale: int,
+                 config: dict,
+                 level_name: str,
                  print_load_message: bool = False) -> None:
         '''Creates and map the tiles to the specified level given the spritesheet and the
         filename_map.csv containing the level tiles layout. This class handle multiple layers,
@@ -37,21 +36,23 @@ class Level:
         collisions) lastly. You can do this by simply setting the foreground lastly in the
         settings.json.'''
 
-        self.gravity = level['physics']['gravity']
-        self.friction = level['physics']['friction']
+        self.config = config
+        self.level = config[level_name]
+        self.scale = config['display']['scale']
+        self.original_tile_size = config[level_name]['tile-size']
+        self.tile_size = self.original_tile_size * self.scale
 
-        '''KEEP TRACK OF THE TILE SIZE AFTER AMPLIFICATION'''
-        self.tile_size = tile_size * scale
-        self.scale = scale
+        self.gravity = self.level['physics']['gravity']
+        self.friction = self.level['physics']['friction']
 
         '''LOOP THROUGH LAYERS'''
         self.tiles_per_layer = []
-        for layer in level['layers']:
+        for layer in self.level['layers']:
 
             '''LOAD SPRITESHEET, SCALE SIZE, AND ADD TEXTURES TO A LIST'''
             spritesheet = SpriteSheet(filename=layer['sp'],
-                                      tile_size=(tile_size,tile_size),
-                                      scale=scale,
+                                      tile_size=(self.original_tile_size,self.original_tile_size),
+                                      scale=self.scale,
                                       dimension=(layer['sp_w'],layer['sp_h']) )
 
             '''CONSTRUCT LEVEL BY MAPPING ALL TILES'''
@@ -60,20 +61,20 @@ class Level:
             self.tiles_per_layer.append(tiles)
 
         '''CREATE LEVEL SURFACE TO RENDER TILES ON TOP OF THE BACKGROUND'''
-        self.level_surface = pygame.Surface(size=(level['size_in_tiles'][0]*self.tile_size*self.scale,
-                                                  level['size_in_tiles'][1]*self.tile_size*self.scale))
+        self.level_surface = pygame.Surface(size=(self.level['size_in_tiles'][0]*self.tile_size,
+                                                  self.level['size_in_tiles'][1]*self.tile_size))
         self.level_surface.set_colorkey((0,0,0))
-        self.bg = pygame.image.load(level['bg']).convert()
+        self.bg = pygame.image.load(self.level['bg']).convert()
         self._render_tiles_to_surface(render_bg=False)
 
         '''LOADED MESSAGE'''
         if print_load_message:
-            print(f'{level["name"]} successfully loaded')
+            print(f'{self.level["name"]} successfully loaded')
 
     def render(self, screen, camera) -> None:
         '''Renders level surface to the game screen.'''
 
-        screen.blit(self.level_surface, (0 - camera.offset.x, 0))
+        screen.blit(self.level_surface, (0 - camera.offset.x, 0 - camera.offset.y))
 
     def add_entity(self, entity) -> None:
         '''Applies physical properties to every entity added.
