@@ -9,18 +9,22 @@
 
   "display": {
     "base-size": 32,
-    "scale": 3
+    "scale": 2
   },
 
   "joel": {
-    "tile-size": 16,
-    "scale": 3,
-    "walk_sheet": "./assets/joel.png",
+    "tile-size": 32,
+    "scale": 2,
+    "walk_sheet": "./assets/joel-set-animated.png",
+    "walk-sheet-size": 4,
     "atk_sheet": "./assets/joel-atk-sheet.png"
   },
 
   "kittol": {
-    "walk_sheet": "./assets/kittol-sheet.png"
+    "tile-size": 32,
+    "scale": 2,
+    "walk_sheet": "./assets/kittol-sheet.png",
+    "walk-sheet-size": 1
   },
 
   "level1": {
@@ -64,7 +68,7 @@
         "sp_h": 5}
     ],
     "bg": "./assets/cave-bg.png",
-    "physics": {"gravity": 0.80, "friction": -0.10}
+    "physics": {"gravity": 0.80, "friction": -0.13}
   }
 
 }

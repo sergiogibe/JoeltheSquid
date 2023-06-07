@@ -8,7 +8,7 @@ from abc import ABC, abstractmethod
 class Entity(ABC):
 
     def __init__(self, config, init_x, init_y) -> None:
-        '''Creates player Joel. '''
+        '''Creates Entity. '''
 
         '''PLAYER DIMENSIONS'''
         self.scale = config['joel']['scale']
@@ -165,19 +165,19 @@ class Entity(ABC):
 
         '''LEFT AND RIGHT ANIMATION'''
         if self.left_key or self.right_key:
-            if self.curent_walk_sprite > self.n_walk_sprites-1:
+            if self.curent_walk_sprite > self.n_walk_sprites:
                 self.curent_walk_sprite = 0  #avoid getting too big, although modulo handles list index
             if self.is_running:
-                self.curent_walk_sprite += 1
+                self.curent_walk_sprite += 0.25
             else:
-                self.curent_walk_sprite += 0.5
+                self.curent_walk_sprite += 0.15
             self.curent_walk_sprite = self.curent_walk_sprite % self.n_walk_sprites
         if self.left_key is False and self.right_key is False:
             self.curent_walk_sprite = 0
 
         '''JUMPING ANIMATION'''
         if self.jumping is True and self.on_ground is False:
-            self.curent_walk_sprite = 5
+            self.curent_walk_sprite = self.n_walk_sprites-1
 
         '''FACING LEFT-RIGHT ANIMATION'''
         if self.left_key:
@@ -386,13 +386,13 @@ class Joel(Entity):
         '''Loads player's textures.'''
 
         self.walk_sprites = SpriteSheet(filename=config['joel']['walk_sheet'],
-                                        tile_size=(16, 16),
+                                        tile_size=(config['joel']['tile-size'], config['joel']['tile-size']),
                                         scale=self.scale,
-                                        dimension=(1, 10))
+                                        dimension=(1, config['joel']['walk-sheet-size']))
         self.n_walk_sprites = len(self.walk_sprites.textures)
         self.curent_walk_sprite = 0
         self.atk_sprites = SpriteSheet(filename=config['joel']['atk_sheet'],
-                                       tile_size=(48, 16),
+                                       tile_size=(48, config['joel']['tile-size']),
                                        scale=self.scale,
                                        dimension=(1, 5))
         self.n_atk_sprites = len(self.atk_sprites.textures)
@@ -412,7 +412,8 @@ class Kittol(Entity):
         '''Loads enemy's textures.'''
 
         self.walk_sprites = SpriteSheet(filename=config['kittol']['walk_sheet'],
-                                        tile_size=(16, 16),
+                                        tile_size=(config['kittol']['tile-size'],
+                                                   config['kittol']['tile-size']),
                                         scale=self.scale,
                                         dimension=(1, 1))
         self.n_walk_sprites = len(self.walk_sprites.textures)

@@ -45,7 +45,7 @@ class Game:
         '''Load the map and the player. Must be called before the main loop.'''
 
         '''LOAD ENTITIES'''
-        self.player = Joel(self.config,init_x=64,init_y=10)
+        self.player = Joel(self.config,init_x=64,init_y=0)
         self.kittol = Kittol(self.config,init_x=580,init_y=230)
 
         '''CREATE GROUP OF ENTITIES'''

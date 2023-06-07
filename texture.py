@@ -45,11 +45,3 @@ class SpriteSheet:
                                                             (self._tile_size[0] * self._scale,
                                                              self._tile_size[1] * self._scale)))
 
-        # for x in range(0, self._dimension[1]):
-        #     for y in range(0, self._dimension[0]):
-        #         self.textures.append(pygame.transform.scale(self._get_texture(x * self._tile_size[0],
-        #                                                                       y * self._tile_size[1],
-        #                                                                       self._tile_size[0],
-        #                                                                       self._tile_size[1]),
-        #                                                     (self._tile_size[0] * self._scale,
-        #                                                      self._tile_size[1] * self._scale)))
