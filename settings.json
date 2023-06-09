@@ -2,72 +2,59 @@
 {
   "game": {
     "name": "Joel the Squid",
-    "ntiles_width": 25,
-    "ntiles_height": 15,
+    "ntiles_width": 16,
+    "ntiles_height": 9,
     "fps": 60
   },
 
   "display": {
     "base-size": 32,
-    "scale": 2
+    "scale": 3
   },
 
   "joel": {
     "tile-size": 32,
-    "scale": 2,
-    "walk_sheet": "./assets/joel-set-animated.png",
+    "scale": 3,
+    "walk_sheet": "./assets/spritesheets/joel/joel-set-animated.png",
     "walk-sheet-size": 4,
-    "atk_sheet": "./assets/joel-atk-sheet.png"
+    "atk_sheet": "./assets/spritesheets/old/joel-atk-sheet.png",
+    "atk-sheet-size": 4,
+    "dash_sheet": "./assets/spritesheets/joel/joel-dash-sheet.png",
+    "dash-sheet-size": 2
   },
 
   "kittol": {
     "tile-size": 32,
     "scale": 2,
-    "walk_sheet": "./assets/kittol-sheet.png",
+    "walk_sheet": "./assets/spritesheets/enemies/kittol-sheet.png",
     "walk-sheet-size": 1
   },
 
-  "level1": {
-    "name": "cave-test",
-    "tile-size": 16,
-    "mapping": "./assets/leveltest.csv",
-    "layers": 1,
-    "sp": "./assets/dungeon_tiles.png",
-    "sp_w": 5,
-    "sp_h": 5,
-    "bg": "./assets/cave-bg.png",
-    "physics": {"gravity": 0.80, "friction": -0.10}
-  },
-
-  "level2": {
-    "name": "cave-origin",
-    "tile-size": 16,
-    "size_in_tiles": [125, 15],
-    "layers": [
-      {"mapping": "./assets/cave-map1_bg.csv",
-        "sp": "./assets/dungeon_tiles-bg2.png",
-        "sp_w": 5,
-        "sp_h": 5},
-      {"mapping": "./assets/cave-map1_fg.csv",
-        "sp": "./assets/dungeon_tiles_fg.png",
-        "sp_w": 5,
-        "sp_h": 5}
-    ],
-    "bg": "./assets/cave-bg.png",
-    "physics": {"gravity": 0.84, "friction": -0.10}
-  },
-
-  "level3": {
+  "level-test": {
     "name": "joel-planet",
     "tile-size": 32,
     "size_in_tiles": [50, 15],
     "layers": [
-      {"mapping": "./assets/joel-planet-map1.csv",
-        "sp": "./assets/tileset-joel-planet.png",
+      {"mapping": "./assets/tests/joel-planet-map1.csv",
+        "sp": "./assets/spritesheets/tilesets/tileset-joel-planet.png",
         "sp_w": 3,
         "sp_h": 5}
     ],
-    "bg": "./assets/cave-bg.png",
+    "bg": "./assets/tests/cave-bg.png",
+    "physics": {"gravity": 0.80, "friction": -0.13}
+  },
+
+  "title-screen": {
+    "name": "title screen",
+    "tile-size": 32,
+    "size_in_tiles": [16, 9],
+    "layers": [
+      {"mapping": "./assets/maps/title-screen/map.csv",
+        "sp": "./assets/spritesheets/tilesets/tileset-joel-planet.png",
+        "sp_w": 3,
+        "sp_h": 5}
+    ],
+    "bg": "./assets/maps/title-screen/bg.png",
     "physics": {"gravity": 0.80, "friction": -0.13}
   }
 

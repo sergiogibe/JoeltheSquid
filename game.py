@@ -46,17 +46,18 @@ class Game:
 
         '''LOAD ENTITIES'''
         self.player = Joel(self.config,init_x=64,init_y=0)
-        self.kittol = Kittol(self.config,init_x=580,init_y=230)
+        #self.kittol = Kittol(self.config,init_x=580,init_y=230)
 
         '''CREATE GROUP OF ENTITIES'''
         self.group.append(self.player)
-        self.group.append(self.kittol)
+        #self.group.append(self.kittol)
         self.n_entities = len(self.group)
 
         '''LOAD MAP'''
         self.level = Level(config=self.config,
                            level_name=level_name,
-                           print_load_message=True)
+                           print_load_message=True,
+                           render_bg=True)
 
         '''ADD ENTITIES TO THE LEVEL'''
         for entity in self.group:
@@ -102,11 +103,12 @@ class Game:
             ix += 1
 
         '''CAMERA SCROLL'''
-        self.camera.scroll(target=self.target_player)
+        #self.camera.scroll(target=self.target_player)
 
         '''CHECK PLAYER DEATH POSITION (PLACEHOLDER)'''
         if self.player.position.y > self.height + 300:
-            self.player.reset()
+            #self.player.reset()
+            pass
 
     def render(self) -> None:
         '''Control and call the rendering of every instance:

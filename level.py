@@ -29,7 +29,8 @@ class Level:
     def __init__(self,
                  config: dict,
                  level_name: str,
-                 print_load_message: bool = False) -> None:
+                 print_load_message: bool = False,
+                 render_bg: bool = False) -> None:
         '''Creates and map the tiles to the specified level given the spritesheet and the
         filename_map.csv containing the level tiles layout. This class handle multiple layers,
         however keep in my that it should render the foreground(where the code check
@@ -64,8 +65,10 @@ class Level:
         self.level_surface = pygame.Surface(size=(self.level['size_in_tiles'][0]*self.tile_size,
                                                   self.level['size_in_tiles'][1]*self.tile_size))
         self.level_surface.set_colorkey((0,0,0))
-        self.bg = pygame.image.load(self.level['bg']).convert()
-        self._render_tiles_to_surface(render_bg=False)
+        self.bg = pygame.transform.scale(pygame.image.load(self.level['bg']).convert(),
+                                         (self.level["size_in_tiles"][0]*self.tile_size,
+                                          self.level["size_in_tiles"][1]*self.tile_size))
+        self._render_tiles_to_surface(render_bg=render_bg)
 
         '''LOADED MESSAGE'''
         if print_load_message:

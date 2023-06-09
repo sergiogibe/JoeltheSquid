@@ -34,6 +34,7 @@ class Entity(ABC):
         '''PLAYER ACTIONS'''
         self.jumping = False
         self.on_ground = False
+        self.is_dashing = False
         self.is_running = False
         self.is_colliding_tiles = False
         self.is_colliding_entities = False
@@ -43,6 +44,7 @@ class Entity(ABC):
 
         '''PLAYER STATS'''
         self.jump_force = 12
+        self.dash_force = 15
         self.jumpX_velocity = 0.9
         self.jump_control = 0.25
         self.walk_accel = 0.3
@@ -136,6 +138,13 @@ class Entity(ABC):
             '''NOT JUMP AGAIN UNTIL COMPLETE THE FALLING'''
             self.on_ground = False
 
+    def dash(self) -> None:
+        '''Controls the player's dash action.'''
+
+        if self.on_ground is False and self.jumping is False and self.velocity.y > 0:
+            self.is_dashing = True
+            self.velocity.y -= self.dash_force / self.weight
+
     def reset(self) -> None:
         self.position.x, self.position.y = self.init_x, self.init_y
         self.facing_left = False
@@ -165,19 +174,30 @@ class Entity(ABC):
 
         '''LEFT AND RIGHT ANIMATION'''
         if self.left_key or self.right_key:
-            if self.curent_walk_sprite > self.n_walk_sprites:
-                self.curent_walk_sprite = 0  #avoid getting too big, although modulo handles list index
-            if self.is_running:
-                self.curent_walk_sprite += 0.25
-            else:
-                self.curent_walk_sprite += 0.15
-            self.curent_walk_sprite = self.curent_walk_sprite % self.n_walk_sprites
+            if self.on_ground:
+                if self.curent_walk_sprite > self.n_walk_sprites:
+                    self.curent_walk_sprite = 0  #avoid getting too big, although modulo handles list index
+                if self.is_running:
+                    self.curent_walk_sprite += 0.25
+                else:
+                    self.curent_walk_sprite += 0.15
+                self.curent_walk_sprite = self.curent_walk_sprite % self.n_walk_sprites
         if self.left_key is False and self.right_key is False:
             self.curent_walk_sprite = 0
 
         '''JUMPING ANIMATION'''
         if self.jumping is True and self.on_ground is False:
             self.curent_walk_sprite = self.n_walk_sprites-1
+
+        '''DASH ANIMATION'''
+        if self.is_dashing:
+            if self.current_dash_sprite > self.n_dash_sprites:
+                self.current_dash_sprite = 0
+            else:
+                self.current_dash_sprite += 0.08
+            self.current_dash_sprite = self.current_dash_sprite % self.n_dash_sprites
+        else:
+            self.current_dash_sprite = 0
 
         '''FACING LEFT-RIGHT ANIMATION'''
         if self.left_key:
@@ -213,6 +233,11 @@ class Entity(ABC):
         self.entity_image = pygame.transform.flip(self.walk_sprites.textures[int(self.curent_walk_sprite)],
                                                   flip_x=self.facing_left,
                                                   flip_y=False)
+
+        if self.is_dashing and self.velocity.y < 0:
+            self.entity_image = pygame.transform.flip(self.dash_sprites.textures[int(self.current_dash_sprite)],
+                                                      flip_x=self.facing_left,
+                                                      flip_y=False)
 
         if self.trigger_atk_anim or self.trigger_deatk_anim:
             self.entity_image = pygame.transform.flip(self.atk_sprites.textures[int(self.current_atk_sprite)],
@@ -259,7 +284,7 @@ class Entity(ABC):
                 self.entity_hitbox.bottom = self.position.y
 
     def _handle_entity_collisions(self, entities) -> None:
-        entities_collided = self._get_hits(self.atk_hitbox,entities)
+        entities_collided = self._get_hits(self.atk_hitbox, entities)
         if len(entities_collided) > 0:
             self.is_colliding_entities = True
         else:
@@ -359,6 +384,7 @@ class Joel(Entity):
                 self.right_key = True
             elif event.key == pygame.K_SPACE:
                 self.jump()
+                self.dash()
             elif event.key == pygame.K_z:
                 self.is_running = True
             elif event.key == pygame.K_r:
@@ -375,6 +401,8 @@ class Joel(Entity):
                 if self.jumping:
                     self.velocity.y *= self.jump_control
                     self.jumping = False
+                if self.is_dashing:
+                    self.is_dashing = False
             elif event.key == pygame.K_z:
                 self.is_running = False
             elif event.key == pygame.K_f:
@@ -385,18 +413,29 @@ class Joel(Entity):
     def _load_textures(self, config) -> None:
         '''Loads player's textures.'''
 
+        '''WALK SPRITES'''
         self.walk_sprites = SpriteSheet(filename=config['joel']['walk_sheet'],
                                         tile_size=(config['joel']['tile-size'], config['joel']['tile-size']),
                                         scale=self.scale,
                                         dimension=(1, config['joel']['walk-sheet-size']))
         self.n_walk_sprites = len(self.walk_sprites.textures)
         self.curent_walk_sprite = 0
+
+        '''ATTACK SPRITES'''
         self.atk_sprites = SpriteSheet(filename=config['joel']['atk_sheet'],
                                        tile_size=(48, config['joel']['tile-size']),
                                        scale=self.scale,
                                        dimension=(1, 5))
         self.n_atk_sprites = len(self.atk_sprites.textures)
         self.current_atk_sprite = 0
+
+        '''DASH SPRITES'''
+        self.dash_sprites = SpriteSheet(filename=config['joel']['dash_sheet'],
+                                        tile_size=(config['joel']['tile-size'], 64),
+                                        scale=self.scale,
+                                        dimension=(1, config['joel']['dash-sheet-size']))
+        self.n_dash_sprites = len(self.dash_sprites.textures)
+        self.current_dash_sprite = 0
 
 
 

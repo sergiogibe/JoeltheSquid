@@ -10,7 +10,28 @@
             </Attribute>
           </value>
         </entry>
+        <entry key="\assets\cave-map1_bg.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\assets\cave-map1_fg.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
         <entry key="\assets\joel-planet-map1.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\assets\leveltest.csv">
           <value>
             <Attribute>
               <option name="separator" value="," />
