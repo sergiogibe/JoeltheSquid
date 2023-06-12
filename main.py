@@ -17,6 +17,7 @@ def main() -> None:
 
     '''INITIALIZE LEVEL'''
     game.load_map(level_name='title-screen')
+    #game.load_map(level_name='level-test')
 
     while True:
         game.clock.tick(game.fps)

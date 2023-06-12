@@ -194,7 +194,7 @@ class Entity(ABC):
             if self.current_dash_sprite > self.n_dash_sprites:
                 self.current_dash_sprite = 0
             else:
-                self.current_dash_sprite += 0.08
+                self.current_dash_sprite += 0.09
             self.current_dash_sprite = self.current_dash_sprite % self.n_dash_sprites
         else:
             self.current_dash_sprite = 0
@@ -423,9 +423,9 @@ class Joel(Entity):
 
         '''ATTACK SPRITES'''
         self.atk_sprites = SpriteSheet(filename=config['joel']['atk_sheet'],
-                                       tile_size=(48, config['joel']['tile-size']),
+                                       tile_size=(64, config['joel']['tile-size']),
                                        scale=self.scale,
-                                       dimension=(1, 5))
+                                       dimension=(1, config['joel']["atk-sheet-size"]))
         self.n_atk_sprites = len(self.atk_sprites.textures)
         self.current_atk_sprite = 0
 

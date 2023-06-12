@@ -17,8 +17,8 @@
     "scale": 3,
     "walk_sheet": "./assets/spritesheets/joel/joel-set-animated.png",
     "walk-sheet-size": 4,
-    "atk_sheet": "./assets/spritesheets/old/joel-atk-sheet.png",
-    "atk-sheet-size": 4,
+    "atk_sheet": "./assets/spritesheets/joel/joel-atk-spritesheet.png",
+    "atk-sheet-size": 5,
     "dash_sheet": "./assets/spritesheets/joel/joel-dash-sheet.png",
     "dash-sheet-size": 2
   },
@@ -40,7 +40,7 @@
         "sp_w": 3,
         "sp_h": 5}
     ],
-    "bg": "./assets/tests/cave-bg.png",
+    "bg": "./assets/maps/title-screen/bg.png",
     "physics": {"gravity": 0.80, "friction": -0.13}
   },
 
